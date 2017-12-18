@@ -1,0 +1,33 @@
+{
+  "name": "serverless-secrets",
+  "version": "1.0.0",
+  "description": "Serverless secrets management with SSM parameter store",
+  "repository": "",
+  "author": "Mark Steele <mark@control-alt-del.org>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "datejs": "^1.0.0-rc3",
+    "mysql": "^2.14.1",
+    "promise-mysql": "^3.0.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.12.0",
+    "aws-sdk-mock": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.0.2",
+    "jsdoc": "^3.4.3",
+    "jsdoc-to-markdown": "^3.0.0",
+    "mocha": "^3.2.0",
+    "nyc": "^11.2.1",
+    "serverless-offline": "^3.13.3",
+    "serverless-plugin-optimize": "^1.0.0-rc.15",
+    "sinon": "^2.1.0"
+  },
+  "scripts": {
+    "test": "IS_TEST=1 mocha",
+    "coverage": "IS_TEST=1 nyc --check-coverage --lines 75 --per-file mocha",
+    "coverage-report": "IS_TEST=1 nyc --check-coverage --report -r html mocha",
+    "jsdoc": "./node_modules/.bin/jsdoc2md --files api/*.js >doc/README.md"
+  }
+}

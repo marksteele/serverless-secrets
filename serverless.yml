@@ -1,0 +1,56 @@
+service: serverless-secrets
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: ${opt:stage, self:custom.defaultStage}
+  environment:
+    DB_USER: "/services/sample1/${opt:stage, self:provider.stage}/DB_USER"
+    DB_PASSWORD: "/services/sample1/${opt:stage, self:provider.stage}/DB_PASSWORD"
+    DB_HOST: "/services/sample1/${opt:stage, self:provider.stage}/DB_HOST"   
+    DB_NAME: "/services/sample1/${opt:stage, self:provider.stage}/DB_NAME"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:DescribeParameters
+        - ssm:GetParameters
+      Resource: "arn:aws:ssm:${opt:region, self:provider.region}:*:parameter/services/sample1/${opt:stage, self:provider.stage}/*"
+    - Effect: Allow
+      Action:
+        - kms:Decrypt
+      Resource: "arn:aws:kms:${opt:region, self:provider.region}:*:key/${self:custom.kms_key.${opt:region, self:provider.region}.${self:provider.stage}}"
+
+custom:
+  defaultStage: dev
+  # The following section is if you want the lambda to hook into the vpc
+  subnetIds:
+    prod:
+      - subnet-aaaaaaa
+  # The security group the lambda will run in, for vpc setups
+  securityGroupIds:
+    prod:
+      - sg-aaaaaaaa
+  kms_key:
+    "us-east-1":
+      prod: "the default kms key that will be used to decrypt params, get this for the az you're deploying to"
+      dev: "foo"
+
+functions:
+  sample:
+    handler: sample.handler
+    memorySize: 1024
+    timeout: 300
+    events:
+      - http:
+          path: /sample
+          method: get
+          cors: true
+    vpc:
+      securityGroupIds: ${self:custom.securityGroupIds.${self:provider.stage}}
+      subnetIds: ${self:custom.subnetIds.${self:provider.stage}}
+
+plugins:
+  - serverless-plugin-optimize
+  - serverless-offline
+
+package:
+  individually: true
