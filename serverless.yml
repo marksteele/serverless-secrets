@@ -23,12 +23,14 @@ custom:
   defaultStage: dev
   # The following section is if you want the lambda to hook into the vpc
   subnetIds:
-    prod:
-      - subnet-aaaaaaa
+    "us-east-1":
+      prod:
+        - subnet-aaaaaaa
   # The security group the lambda will run in, for vpc setups
   securityGroupIds:
-    prod:
-      - sg-aaaaaaaa
+    "us-east-1":
+      prod:
+        - sg-aaaaaaaa
   kms_key:
     "us-east-1":
       prod: "the default kms key that will be used to decrypt params, get this for the az you're deploying to"
@@ -45,8 +47,8 @@ functions:
           method: get
           cors: true
     vpc:
-      securityGroupIds: ${self:custom.securityGroupIds.${self:provider.stage}}
-      subnetIds: ${self:custom.subnetIds.${self:provider.stage}}
+      securityGroupIds: ${self:custom.securityGroupIds.${opt:region, self:provider.region}.${self:provider.stage}}
+      subnetIds: ${self:custom.subnetIds.${opt:region, self:provider.region}.${self:provider.stage}}
 
 plugins:
   - serverless-plugin-optimize
